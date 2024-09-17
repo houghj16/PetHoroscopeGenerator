@@ -1,0 +1,45 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35310.232 main
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetHoroscopeGenerator.AppHost", "PetHoroscopeGenerator.AppHost\PetHoroscopeGenerator.AppHost.csproj", "{FB6A1B31-4151-429C-BB10-8510619805AB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetHoroscopeGenerator.ServiceDefaults", "PetHoroscopeGenerator.ServiceDefaults\PetHoroscopeGenerator.ServiceDefaults.csproj", "{AD70533D-42E0-49FE-8D1F-A70CFECDC461}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetHoroscopeGenerator.ApiService", "PetHoroscopeGenerator.ApiService\PetHoroscopeGenerator.ApiService.csproj", "{7D2174FE-541D-46BD-8209-3824057E3F3B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetHoroscopeGenerator.Web", "PetHoroscopeGenerator.Web\PetHoroscopeGenerator.Web.csproj", "{C1EF3640-0B13-4C37-AB1D-D36EABE16908}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetHoroscopeGenerator.Tests", "PetHoroscopeGenerator.Tests\PetHoroscopeGenerator.Tests.csproj", "{4E57BE87-9D73-4D37-8C43-D6B7F1C98262}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FB6A1B31-4151-429C-BB10-8510619805AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB6A1B31-4151-429C-BB10-8510619805AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB6A1B31-4151-429C-BB10-8510619805AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB6A1B31-4151-429C-BB10-8510619805AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD70533D-42E0-49FE-8D1F-A70CFECDC461}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD70533D-42E0-49FE-8D1F-A70CFECDC461}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD70533D-42E0-49FE-8D1F-A70CFECDC461}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD70533D-42E0-49FE-8D1F-A70CFECDC461}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D2174FE-541D-46BD-8209-3824057E3F3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D2174FE-541D-46BD-8209-3824057E3F3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D2174FE-541D-46BD-8209-3824057E3F3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D2174FE-541D-46BD-8209-3824057E3F3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1EF3640-0B13-4C37-AB1D-D36EABE16908}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1EF3640-0B13-4C37-AB1D-D36EABE16908}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1EF3640-0B13-4C37-AB1D-D36EABE16908}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1EF3640-0B13-4C37-AB1D-D36EABE16908}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E57BE87-9D73-4D37-8C43-D6B7F1C98262}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E57BE87-9D73-4D37-8C43-D6B7F1C98262}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E57BE87-9D73-4D37-8C43-D6B7F1C98262}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E57BE87-9D73-4D37-8C43-D6B7F1C98262}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

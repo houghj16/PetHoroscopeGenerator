@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsAspireHost>true</IsAspireHost>
+    <UserSecretsId>3b7325b5-53f7-42c4-bd28-d26dadb63069</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PetHoroscopeGenerator.ApiService\PetHoroscopeGenerator.ApiService.csproj" />
+    <ProjectReference Include="..\PetHoroscopeGenerator.Web\PetHoroscopeGenerator.Web.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.AppHost" Version="8.2.0" />
+  </ItemGroup>
+
+</Project>
