@@ -1,7 +1,111 @@
-﻿@page "/predictions"
+﻿@page "/"
 
-<h3>Predictions</h3>
+<div class="container">
+    <div class="intro-text">
+        <p>*You have entered the shop of the wise and enigmatic wizard, Wizzlebop*</p>
+        <p>Greetings, seeker of mysteries. What is it that you wish to uncover today about your furry friend? Perhaps a glimpse into their future, a hidden truth, or a whisper from the stars? Choose a file of them or drag one here to find out more!</p>
+    </div>
+
+    <div class="content">
+        <img class="wizard-cat" src="images/wizardCat.png" alt="Wizard Cat" />
+        <div class="upload-box">
+            @if (previewUrl != null)
+            {
+                <img class="image-preview" src="@previewUrl" alt="Image Preview" />
+            }
+            else
+            {
+                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-upload" viewBox="0 0 16 16">
+                    <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5" />
+                    <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708z" />
+                </svg>
+            }
+            <InputFile OnChange="HandleFileSelected" />
+        </div>
+    </div>
+
+    <div class="crystal-ball">
+        <p>My crystal ball says...</p>
+        <textarea class="crystal-ball-text" readonly>@crystalBallMessage</textarea>
+    </div>
+</div>
+
+<style>
+    .container {
+        padding: 20px;
+    }
+
+    .content {
+        display: flex;
+        align-items: center;
+    }
+
+    .wizard-cat {
+        width: 300px;
+        height: 300px;
+        border-radius: 5px;
+        margin-right: 40px;
+    }
+
+    .upload-box {
+        width: 300px;
+        height: 300px;
+        border: 2px dashed white;
+        border-radius: 5px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        cursor: pointer;
+        /* position: relative; */
+    }
+
+    .upload-box input[type="file"] {
+        width: 290px;
+        margin-top: 100px;
+        background-color: grey;
+        cursor: pointer;
+    }
+
+    .image-preview {
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    .crystal-ball {
+        margin-top: 20px;
+        text-align: left;
+    }
+
+    .crystal-ball-text {
+        width: 100%;
+        height: 100px;
+        padding: 10px;
+        font-size: 16px;
+        background-color: white;
+        color: black;
+        border: none;
+        border-radius: 5px;
+    }
+</style>
 
 @code {
+    private string crystalBallMessage = "Output message";
+    private string? previewUrl;
 
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        // Process the file as needed
+        // For example, you can read the file content and update the crystalBallMessage
+        using var stream = file.OpenReadStream();
+        using var reader = new StreamReader(stream);
+        var content = await reader.ReadToEndAsync();
+        crystalBallMessage = $"File '{file.Name}' uploaded successfully!";
+
+        // // Generate a preview URL for the image
+        using var memoryStream = new MemoryStream();
+        await file.OpenReadStream().CopyToAsync(memoryStream);
+        previewUrl = $"data:{file.ContentType};base64,{Convert.ToBase64String(memoryStream.ToArray())}";
+    }
 }
