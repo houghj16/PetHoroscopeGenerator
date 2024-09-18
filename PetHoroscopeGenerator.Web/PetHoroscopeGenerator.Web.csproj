@@ -4,7 +4,12 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <UserSecretsId>cc40e722-5ae2-4ebe-be55-9b3f5c186319</UserSecretsId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SemanticKernel" Version="1.20.0" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\PetHoroscopeGenerator.ServiceDefaults\PetHoroscopeGenerator.ServiceDefaults.csproj" />
