@@ -1,4 +1,5 @@
 ﻿@page "/"
+@rendermode InteractiveServer
 
 <div class="container">
     <div class="intro-text">
@@ -21,12 +22,17 @@
                 </svg>
             }
             <InputFile OnChange="HandleFileSelected" />
+            <textarea class="file-upload-confirmation-text" readonly>@confirmationText</textarea>
+        </div>
+        <div class="upload-text">
+            <textarea @oninput="UpdateText"></textarea>
         </div>
     </div>
 
     <div class="crystal-ball">
+        <button class="btn btn-primary" @onclick="Submit">Get Prediction</button>
         <p>My crystal ball says...</p>
-        <textarea class="crystal-ball-text" readonly>@crystalBallMessage</textarea>
+        <textarea class="prediction-text" readonly>@crystalBallMessage</textarea>
     </div>
 </div>
 
@@ -37,14 +43,13 @@
 
     .content {
         display: flex;
-        align-items: center;
+        justify-content: space-between;
     }
 
     .wizard-cat {
         width: 300px;
         height: 300px;
         border-radius: 5px;
-        margin-right: 40px;
     }
 
     .upload-box {
@@ -57,27 +62,48 @@
         align-items: center;
         justify-content: flex-end;
         cursor: pointer;
-        /* position: relative; */
     }
 
     .upload-box input[type="file"] {
         width: 290px;
-        margin-top: 100px;
         background-color: grey;
         cursor: pointer;
     }
 
+    .upload-text textarea{
+        width: 300px;
+        height: 300px;
+        border-radius: 5px;
+        padding: 10px;
+    }
+
     .image-preview {
-        max-width: 100%;
-        max-height: 100%;
+        max-width: 100px;
+        max-height: 100px;
+        border-radius: 5px;
+    }
+
+    .file-upload-confirmation-text {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        background-color: white;
+        color: black;
+        border-radius: 5px;
     }
 
     .crystal-ball {
         margin-top: 20px;
         text-align: left;
+        flex-direction: column;
+        justify-content: space-between
     }
 
-    .crystal-ball-text {
+    .crystal-ball p {
+        margin-top: 20px;
+    }
+
+    .prediction-text {
         width: 100%;
         height: 100px;
         padding: 10px;
@@ -90,8 +116,15 @@
 </style>
 
 @code {
-    private string crystalBallMessage = "Output message";
+    private string? crystalBallMessage;
+    private string confirmationText = "Upload a file";
     private string? previewUrl;
+    public string Text {get; set;}
+
+    private void UpdateText(ChangeEventArgs e)
+    {
+        Text = e.Value.ToString();
+    }
 
     private async Task HandleFileSelected(InputFileChangeEventArgs e)
     {
@@ -101,11 +134,19 @@
         using var stream = file.OpenReadStream();
         using var reader = new StreamReader(stream);
         var content = await reader.ReadToEndAsync();
-        crystalBallMessage = $"File '{file.Name}' uploaded successfully!";
+        confirmationText = $"File '{file.Name}' uploaded successfully!";
 
         // // Generate a preview URL for the image
         using var memoryStream = new MemoryStream();
         await file.OpenReadStream().CopyToAsync(memoryStream);
         previewUrl = $"data:{file.ContentType};base64,{Convert.ToBase64String(memoryStream.ToArray())}";
+    }
+
+    private async Task Submit()
+    {
+        
+        
+        crystalBallMessage = Text;
+
     }
 }
