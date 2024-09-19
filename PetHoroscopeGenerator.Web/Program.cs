@@ -1,3 +1,4 @@
+using Azure.Identity;
 using PetHoroscopeGenerator.Web;
 using PetHoroscopeGenerator.Web.Components;
 
@@ -18,6 +19,9 @@ builder.Services.AddOutputCache();
 //        // Learn more about service discovery scheme resolution at https://aka.ms/dotnet/sdschemes.
 //        client.BaseAddress = new("https+http://weatherapiservice");
 //    });
+
+var keyVaultEndpoint = new Uri(builder.Configuration["KeyVault:VaultUri"]);
+builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, new DefaultAzureCredential());
 
 builder.Services.AddHttpClient<PredictionsApiClient>(client =>
 {
