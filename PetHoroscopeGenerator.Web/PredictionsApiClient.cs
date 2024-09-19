@@ -34,7 +34,7 @@ public class PredictionsApiClient(HttpClient httpClient)
         history.AddSystemMessage("""
             Do not use any markdown formatting, octothorpes, or asteriks. 
             Instead add a newline after headers. 
-            Limit the output to 600 characters.
+            Limit the output to 800 characters.
             Use the provided image to say something specific about the dog.
             Include a horoscope for the day and one line sections for a lucky treat, a favorite toy, a fun activity, and what to watch out for.
             Format responses like this:
@@ -47,6 +47,7 @@ public class PredictionsApiClient(HttpClient httpClient)
             Fun Activity: [activity] *emojis*
             Watch Out For: [danger] *emojis*`
             Add emojis to make the tone playful.
+            Add a silly sign off from the cat wizard.
             """);
 
         // Add the image and userMessage message to the ChatHistory
