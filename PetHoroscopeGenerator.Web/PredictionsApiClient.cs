@@ -6,19 +6,29 @@ using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 using static System.Net.WebRequestMethods;
 
-public class PredictionsApiClient(HttpClient httpClient)
+public class PredictionsApiClient
 {
+    private readonly string? _endpoint;
+    private readonly string? _deployment;
+    private readonly string? _key;
+
+    public PredictionsApiClient(IConfiguration configuration, HttpClient httpClient)
+    {
+        _endpoint = configuration["AZURE-OPENAI-ENDPOINT"];
+        _deployment = configuration["AZURE-OPENAI-GPT-NAME"];
+        _key = configuration["AZURE-OPENAI-KEY"];
+    }
     public async Task<string?> GetPredictionAsync(string petDescription, string previewURL, int maxItems = 10, CancellationToken cancellationToken = default)
     {
 
-        var config = new ConfigurationBuilder().AddUserSecrets<Program>().Build();
-        string endpoint = config["AZURE_OPENAI_ENDPOINT"];
-        string deployment = config["AZURE_OPENAI_GPT_NAME"];
-        string key = config["AZURE_OPENAI_KEY"];
+        //var config = new ConfigurationBuilder().AddUserSecrets<Program>().Build();
+        //string endpoint = config["AZURE_OPENAI_ENDPOINT"];
+        //string deployment = config["AZURE_OPENAI_GPT_NAME"];
+        //string key = config["AZURE_OPENAI_KEY"];
 
         // Create a Kernel containing the Azure OpenAI Chat Completion Service
         Kernel kernel = Kernel.CreateBuilder()
-            .AddAzureOpenAIChatCompletion(deployment, endpoint, key)
+            .AddAzureOpenAIChatCompletion(_deployment, _endpoint, _key)
             .Build();
 
         // Create and print out the prompt
