@@ -35,6 +35,10 @@
         <button class="btn btn-primary" @onclick="Submit">Get Prediction</button>
         <p>My crystal ball says...</p>
         <textarea class="prediction-text" readonly>@crystalBallMessage</textarea>
+        @if (generatedImageUrl != null)
+        {
+            <img class="generated-image" src="@generatedImageUrl" alt="Generated Image" />
+        }
     </div>
 </div>
 
@@ -115,12 +119,20 @@
         border: none;
         border-radius: 5px;
     }
+
+    .generated-image {
+        max-width: 100%;
+        height: auto;
+        border-radius: 5px;
+        margin-top: 20px;
+    }
 </style>
 
 @code {
     private string? crystalBallMessage;
     private string confirmationText = "Upload a file";
     private string? previewUrl;
+    private string? generatedImageUrl;
     public string Text {get; set;}
 
     private void UpdateText(ChangeEventArgs e)
@@ -147,5 +159,11 @@
     private async Task Submit()
     {
         crystalBallMessage = await PredictionApi.GetPredictionAsync(Text, previewUrl);
+        await GenerateImage();
+    }
+
+    private async Task GenerateImage()
+    {
+        generatedImageUrl = await PredictionApi.GenerateImageAsync(Text);
     }
 }
