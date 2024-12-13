@@ -94,3 +94,72 @@ main {
         right: 0.75rem;
         top: 0.5rem;
     }
+
+/* Plant-related styles */
+.plant-sage {
+    width: 300px;
+    height: 300px;
+    border-radius: 5px;
+}
+
+.upload-box {
+    width: 300px;
+    height: 300px;
+    border: 2px dashed white;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    cursor: pointer;
+}
+
+.upload-box input[type="file"] {
+    width: 290px;
+    background-color: grey;
+    cursor: pointer;
+}
+
+.upload-text textarea {
+    width: 300px;
+    height: 300px;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.image-preview {
+    max-width: 100px;
+    max-height: 100px;
+    border-radius: 5px;
+}
+
+.file-upload-confirmation-text {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    background-color: white;
+    color: black;
+    border-radius: 5px;
+}
+
+.crystal-ball {
+    margin-top: 20px;
+    text-align: left;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.crystal-ball p {
+    margin-top: 20px;
+}
+
+.prediction-text {
+    width: 100%;
+    height: 600px;
+    padding: 10px;
+    font-size: 16px;
+    background-color: white;
+    color: black;
+    border: none;
+    border-radius: 5px;
+}
