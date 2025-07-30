@@ -1,0 +1,56 @@
+@page "/plants"
+@rendermode InteractiveServer
+
+<PageTitle>Plants</PageTitle>
+
+<h1>Plants</h1>
+
+<p>Discover plant care tips and information for your green friends!</p>
+
+@if (plants == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        @foreach (var plant in plants)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@plant.Name</h5>
+                        <p class="card-text">@plant.Description</p>
+                        <p class="card-text">
+                            <small class="text-muted">Care Level: @plant.CareLevel</small>
+                        </p>
+                        <p class="card-text">
+                            <strong>Care Tip:</strong> @plant.CareTip
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private PlantInfo[]? plants;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Simulate loading data
+        await Task.Delay(500);
+        
+        plants = [
+            new PlantInfo("Snake Plant", "A resilient plant perfect for beginners", "Easy", "Water only when soil is completely dry"),
+            new PlantInfo("Pothos", "Fast-growing vine with heart-shaped leaves", "Easy", "Thrives in bright, indirect light"),
+            new PlantInfo("Fiddle Leaf Fig", "Statement plant with large, glossy leaves", "Moderate", "Keep soil consistently moist but not soggy"),
+            new PlantInfo("Monstera Deliciosa", "Popular plant with unique split leaves", "Moderate", "Prefers bright, indirect light and weekly watering"),
+            new PlantInfo("Peace Lily", "Elegant plant that blooms white flowers", "Easy", "Droops when thirsty, making watering easy to remember"),
+            new PlantInfo("Rubber Plant", "Glossy-leaved plant that grows quickly", "Easy", "Wipe leaves regularly to keep them shiny and dust-free")
+        ];
+    }
+
+    public record PlantInfo(string Name, string Description, string CareLevel, string CareTip);
+}
