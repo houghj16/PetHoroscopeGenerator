@@ -1,0 +1,52 @@
+---
+globs: *Tests.cs,*Test*.cs
+---
+
+# Testing Patterns
+
+## Test Organization
+- Place tests in `PetHoroscopeGenerator.Tests` project
+- Use descriptive test class names (e.g., `MainLayoutTests`)
+- Group related tests in the same class
+- Use meaningful test method names
+
+## Test Structure
+- Follow Arrange-Act-Assert pattern
+- Use `[Fact]` for simple tests
+- Use `[Theory]` with `[InlineData]` for parameterized tests
+- Mock external dependencies
+
+## Blazor Component Testing
+- Test component rendering and behavior
+- Verify event handling
+- Test navigation and routing
+- Mock injected services
+
+## API Testing
+- Test API client methods
+- Mock HTTP responses
+- Test error handling scenarios
+- Verify caching behavior
+
+## Example Test Pattern:
+```csharp
+[Fact]
+public void Component_Renders_Correctly()
+{
+    // Arrange
+    var component = RenderComponent<MyComponent>();
+    
+    // Act
+    var element = component.Find(".my-class");
+    
+    // Assert
+    Assert.NotNull(element);
+    Assert.Equal("Expected Text", element.TextContent);
+}
+```
+
+## Test Data
+- Use realistic test data
+- Create helper methods for common setup
+- Use builders for complex objects
+- Keep tests independent and isolated

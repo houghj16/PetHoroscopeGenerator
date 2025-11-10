@@ -1,0 +1,45 @@
+---
+globs: *ApiClient.cs,*Service.cs
+---
+
+# API Client Patterns
+
+## PredictionsApiClient Usage
+The [PredictionsApiClient.cs](mdc:PetHoroscopeGenerator.Web/PredictionsApiClient.cs) handles AI predictions with these patterns:
+
+## Service Registration
+- Register in [Program.cs](mdc:PetHoroscopeGenerator.Web/Program.cs) with HttpClient
+- Use service discovery with `https+http://` URLs
+- Configure with Azure Key Vault for secrets
+
+## Prediction Types
+Use the `PredictionType` enum:
+- `PredictionType.Pet` - Regular pet horoscopes
+- `PredictionType.Plant` - Plant horoscopes  
+- `PredictionType.Mythical` - Mythical creature horoscopes
+
+## Caching Strategy
+- 30-minute cache for predictions using `IMemoryCache`
+- Cache key format: `{type}_{description}_{previewURL}`
+- Check cache before making API calls
+
+## Error Handling
+- Return user-friendly messages for errors
+- Handle authentication with `IHttpContextAccessor`
+- Graceful fallback for missing configuration
+
+## Usage Pattern:
+```csharp
+@inject PredictionsApiClient PredictionApi
+
+private async Task Submit()
+{
+    crystalBallMessage = await PredictionApi.GetPredictionAsync(
+        Text, previewUrl, PredictionType.Mythical);
+}
+```
+
+## Configuration
+- Azure OpenAI endpoint from `AZURE-OPENAI-ENDPOINT`
+- Deployment name from `AZURE-OPENAI-GPT-NAME`
+- API key from `AZURE-OPENAI-KEY`

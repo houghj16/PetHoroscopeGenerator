@@ -1,0 +1,55 @@
+---
+globs: *.razor,*.razor.cs
+---
+
+# Blazor Component Conventions
+
+## Page Structure
+- Always use `@page "/route-name"` for routing
+- Include `@rendermode InteractiveServer` for interactive components
+- Use `<PageTitle>Page Name</PageTitle>` for browser title
+- Inject services with `@inject ServiceType ServiceName`
+
+## Component Organization
+- Place pages in `Components/Pages/`
+- Place layouts in `Components/Layout/`
+- Use descriptive component names (e.g., `MythicalPets.razor`)
+- Include `@using PetHoroscopeGenerator.Web` in `_Imports.razor`
+
+## Styling
+- Use scoped CSS with `<style>` tags in components
+- Follow Bootstrap classes for consistent styling
+- Use CSS custom properties for theming
+- Keep styles organized by component sections
+
+## Code-Behind Pattern
+- Use `@code` blocks for component logic
+- Keep methods small and focused
+- Use async/await for API calls
+- Handle file uploads with `InputFile` component
+
+## Example Structure:
+```razor
+@page "/my-page"
+@rendermode InteractiveServer
+@inject MyService Service
+
+<PageTitle>My Page</PageTitle>
+
+<div class="container">
+    <!-- Content -->
+</div>
+
+<style>
+    .container { /* styles */ }
+</style>
+
+@code {
+    private string? myProperty;
+    
+    private async Task MyMethod()
+    {
+        // Logic here
+    }
+}
+```
