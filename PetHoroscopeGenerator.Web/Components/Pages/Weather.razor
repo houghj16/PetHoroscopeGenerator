@@ -1,122 +1,61 @@
 ﻿@page "/weather"
-@attribute [StreamRendering(true)]
-@attribute [OutputCache(Duration = 5)]
+@using PetHoroscopeGenerator.Web.Clients
+@inject WeatherApiClient WeatherApiClient
+@attribute [StreamRendering]
+@attribute [OutputCache(Duration = 60)]
 
-@inject WeatherApiClient WeatherApi
+<PageTitle>Weather Forecast</PageTitle>
 
-<PageTitle>Weather</PageTitle>
+<h1>Weather Forecast</h1>
 
-<h1>Weather</h1>
+<p>This component demonstrates showing data loaded from a backend API service. Use the search below to filter results.</p>
 
-<p>This component demonstrates showing data loaded from a backend API service.</p>
+<p>
+    <label>
+        Filter by summary:
+        <input @bind="searchTerm" @bind:event="oninput" />
+    </label>
+</p>
 
-@if (forecasts == null)
+@if (forecasts is null)
 {
-    <p><em>Loading...</em></p>
+    <p><em>Loading forecast... please wait.</em></p>
 }
 else
 {
-    <table class="table weather-table">
+    <!-- Display forecasts in a grid -->
+    <table class="table table-striped">
         <thead>
             <tr>
                 <th>Date</th>
-                <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
+                <th>Temp. (K)</th>
                 <th>Summary</th>
-                <th>Description</th>
-                <th>Description (FR)</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var forecast in forecasts)
+            @foreach (var forecast in FilteredForecasts)
             {
                 <tr>
                     <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
+                    <td>@(forecast.TemperatureC + 273.15)</td>
                     <td>@forecast.Summary</td>
-                    <td>@GetWeatherDescription(forecast.Summary)</td>
-                    <td>@GetFrenchDescription(forecast.Summary)</td>
                 </tr>
             }
         </tbody>
     </table>
 }
 
-<style>
-    .weather-table tbody tr {
-        transition: background-color 0.2s ease, transform 0.1s ease;
-    }
-
-    .weather-table tbody tr:hover {
-        background-color: #f0f8ff;
-        transform: scale(1.01);
-        cursor: pointer;
-    }
-
-    .weather-table tbody tr:hover td {
-        color: #0066cc;
-        border-bottom: 2px solid #0066cc;
-    }
-
-    .weather-table thead th {
-        background-color: #e9ecef;
-        font-weight: 600;
-    }
-
-    .weather-table {
-        border-collapse: separate;
-        border-spacing: 0;
-    }
-
-    .weather-table td {
-        transition: color 0.2s ease, border-bottom 0.2s ease;
-        border-bottom: 2px solid transparent;
-        padding: 0.75rem;
-    }
-</style>
-
 @code {
     private WeatherForecast[]? forecasts;
+    private string? searchTerm;
+
+    private IEnumerable<WeatherForecast> FilteredForecasts =>
+        forecasts?.Where(f => string.IsNullOrWhiteSpace(searchTerm) || f.Summary?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) == true) ?? Enumerable.Empty<WeatherForecast>();
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await WeatherApi.GetWeatherAsync();
-    }
-
-    private string GetWeatherDescription(string? summary)
-    {
-        return summary switch
-        {
-            "Freezing" => "Very cold conditions with ice formation",
-            "Bracing" => "Cold and invigorating weather",
-            "Chilly" => "Cool temperature requiring a jacket",
-            "Cool" => "Pleasantly cool conditions",
-            "Mild" => "Comfortable moderate temperature",
-            "Warm" => "Pleasant warm weather",
-            "Balmy" => "Mild and pleasant conditions",
-            "Hot" => "High temperature day",
-            "Sweltering" => "Extremely hot and humid",
-            "Scorching" => "Intensely hot conditions",
-            _ => "General weather conditions"
-        };
-    }
-
-    private string GetFrenchDescription(string? summary)
-    {
-        return summary switch
-        {
-            "Freezing" => "Conditions très froides avec formation de glace",
-            "Bracing" => "Temps froid et revigorant",
-            "Chilly" => "Température fraîche nécessitant une veste",
-            "Cool" => "Conditions agréablement fraîches",
-            "Mild" => "Température modérée et confortable",
-            "Warm" => "Temps chaud agréable",
-            "Balmy" => "Conditions douces et agréables",
-            "Hot" => "Journée de haute température",
-            "Sweltering" => "Extrêmement chaud et humide",
-            "Scorching" => "Conditions intensément chaudes",
-            _ => "Conditions météorologiques générales"
-        };
+        // Artificial delay for demonstration
+        await Task.Delay(500);
+        forecasts = await WeatherApiClient.GetWeatherAsync();
     }
 }
