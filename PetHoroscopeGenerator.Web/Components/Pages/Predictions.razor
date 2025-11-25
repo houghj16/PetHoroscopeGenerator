@@ -23,16 +23,17 @@
                     <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708z" />
                 </svg>
             }
-            <InputFile OnChange="HandleFileSelected" />
+            <!-- accept only images and limit size on read -->
+            <InputFile OnChange="HandleFileSelected" accept="image/*" />
             <textarea class="file-upload-confirmation-text" readonly>@confirmationText</textarea>
         </div>
         <div class="upload-text">
-            <textarea @oninput="UpdateText"></textarea>
+            <textarea @bind="Text" placeholder="Describe your pet (optional)"></textarea>
         </div>
     </div>
 
     <div class="crystal-ball">
-        <button class="btn btn-primary" @onclick="Submit">Get Prediction</button>
+        <button class="btn btn-primary" @onclick="Submit" disabled="@(isLoading || (string.IsNullOrWhiteSpace(Text) && previewUrl == null))">@(isLoading ? "Getting Prediction..." : "Get Prediction")</button>
         <p>My crystal ball says...</p>
         <textarea class="prediction-text" readonly>@crystalBallMessage</textarea>
     </div>
@@ -121,31 +122,63 @@
     private string? crystalBallMessage;
     private string confirmationText = "Upload a file";
     private string? previewUrl;
-    public string Text {get; set;}
-
-    private void UpdateText(ChangeEventArgs e)
-    {
-        Text = e.Value.ToString();
-    }
+    private bool isLoading;
+    private const long MaxFileSize = 5 * 1024 * 1024; // 5 MB
+    public string Text { get; set; } = string.Empty;
 
     private async Task HandleFileSelected(InputFileChangeEventArgs e)
     {
         var file = e.File;
-        // Process the file as needed
-        // For example, you can read the file content and update the crystalBallMessage
-        using var stream = file.OpenReadStream();
-        using var reader = new StreamReader(stream);
-        var content = await reader.ReadToEndAsync();
-        confirmationText = $"File '{file.Name}' uploaded successfully!";
+        if (file == null)
+        {
+            confirmationText = "No file selected.";
+            return;
+        }
 
-        // // Generate a preview URL for the image
-        using var memoryStream = new MemoryStream();
-        await file.OpenReadStream().CopyToAsync(memoryStream);
-        previewUrl = $"data:{file.ContentType};base64,{Convert.ToBase64String(memoryStream.ToArray())}";
+        if (!file.ContentType?.StartsWith("image/") ?? true)
+        {
+            confirmationText = "Only image files are supported.";
+            return;
+        }
+
+        if (file.Size > MaxFileSize)
+        {
+            confirmationText = $"File too large. Max is {MaxFileSize / (1024 * 1024)} MB.";
+            return;
+        }
+
+        try
+        {
+            using var memoryStream = new MemoryStream();
+            await file.OpenReadStream(MaxFileSize).CopyToAsync(memoryStream);
+            var bytes = memoryStream.ToArray();
+            previewUrl = $"data:{file.ContentType};base64,{Convert.ToBase64String(bytes)}";
+            confirmationText = $"File '{file.Name}' uploaded successfully ({file.Size / 1024} KB).";
+        }
+        catch (Exception ex)
+        {
+            confirmationText = $"Failed to read file: {ex.Message}";
+        }
     }
 
     private async Task Submit()
     {
-        crystalBallMessage = await PredictionApi.GetPredictionAsync(Text, previewUrl);
+        if (isLoading)
+            return;
+
+        isLoading = true;
+        crystalBallMessage = null;
+        try
+        {
+            crystalBallMessage = await PredictionApi.GetPredictionAsync(Text, previewUrl);
+        }
+        catch (Exception ex)
+        {
+            crystalBallMessage = $"Error getting prediction: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
     }
 }
