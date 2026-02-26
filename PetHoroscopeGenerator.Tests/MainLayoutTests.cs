@@ -1,6 +1,4 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Testing;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Bunit;
 using PetHoroscopeGenerator.Web.Components.Layout;
 
 namespace PetHoroscopeGenerator.Tests
@@ -8,19 +6,19 @@ namespace PetHoroscopeGenerator.Tests
     [TestClass]
     public class MainLayoutTests
     {
-        private TestHost _host;
+        private Bunit.TestContext? _testContext;
 
         [TestInitialize]
         public void Setup()
         {
-            _host = new TestHost();
+            _testContext = new Bunit.TestContext();
         }
 
         [TestMethod]
         public void MainLayout_RendersCorrectly()
         {
             // Arrange & Act
-            var component = _host.AddComponent<MainLayout>();
+            var component = _testContext.RenderComponent<MainLayout>();
 
             // Assert
             Assert.IsNotNull(component);
@@ -35,7 +33,7 @@ namespace PetHoroscopeGenerator.Tests
         [TestCleanup]
         public void Cleanup()
         {
-            _host.Dispose();
+            _testContext.Dispose();
         }
     }
 }
