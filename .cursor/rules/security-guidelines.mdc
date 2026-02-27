@@ -1,0 +1,42 @@
+---
+alwaysApply: true
+---
+
+# Security Guidelines
+
+## Configuration Management
+- **NEVER** hardcode secrets in code
+- Use Azure Key Vault for sensitive configuration
+- Store secrets in `appsettings.json` only for development
+- Use `IConfiguration` to access configuration values
+
+## Authentication & Authorization
+- Check authentication with `IHttpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated`
+- Return appropriate messages for unauthenticated users
+- Don't expose sensitive data to unauthorized users
+
+## File Upload Security
+- Validate file types and sizes
+- Use `InputFile` component for secure file handling
+- Generate preview URLs safely with base64 encoding
+- Don't store uploaded files permanently
+
+## API Security
+- Use HTTPS for all external API calls
+- Implement proper error handling without exposing internals
+- Cache responses appropriately to reduce API calls
+- Use service discovery for internal service communication
+
+## Error Handling
+- Return user-friendly error messages
+- Log errors appropriately without exposing sensitive data
+- Use try-catch blocks for external API calls
+- Don't expose stack traces to users
+
+## Example Secure Pattern:
+```csharp
+if (!_httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? true)
+{
+    return "Please sign in to see predictions...";
+}
+```

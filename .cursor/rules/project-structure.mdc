@@ -1,0 +1,30 @@
+---
+alwaysApply: true
+---
+
+# Pet Horoscope Generator - Project Structure
+
+This is a .NET Aspire-based Blazor Server application with the following architecture:
+
+## Project Structure
+- **PetHoroscopeGenerator.Web** - Main Blazor web application (UI layer)
+- **PetHoroscopeGenerator.ApiService** - Backend API service
+- **PetHoroscopeGenerator.ServiceDefaults** - Shared service configuration
+- **PetHoroscopeGenerator.AppHost** - Aspire orchestration host
+- **PetHoroscopeGenerator.Tests** - Unit and integration tests
+
+## Key Files
+- [Program.cs](mdc:PetHoroscopeGenerator.Web/Program.cs) - Web app entry point with service configuration
+- [PredictionsApiClient.cs](mdc:PetHoroscopeGenerator.Web/PredictionsApiClient.cs) - AI prediction service client
+- [MainLayout.razor](mdc:PetHoroscopeGenerator.Web/Components/Layout/MainLayout.razor) - Main application layout
+- [NavMenu.razor](mdc:PetHoroscopeGenerator.Web/Components/Layout/NavMenu.razor) - Navigation menu
+
+## Technology Stack
+- **.NET 8** with Blazor Server
+- **Azure OpenAI** for AI predictions
+- **Azure Key Vault** for secrets management
+- **.NET Aspire** for microservices orchestration
+- **Bootstrap** for UI styling
+
+## Page Structure
+All pages follow the pattern: `@page "/route"` with `@rendermode InteractiveServer`

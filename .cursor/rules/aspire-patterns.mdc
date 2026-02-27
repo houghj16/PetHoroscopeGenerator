@@ -1,0 +1,44 @@
+---
+globs: *AppHost*,*ServiceDefaults*
+---
+
+# .NET Aspire Patterns
+
+## Service Discovery
+- Use `https+http://` URLs for service discovery
+- Configure services in [AppHost/Program.cs](mdc:PetHoroscopeGenerator.AppHost/Program.cs)
+- Reference services with `WithReference()`
+
+## Service Configuration
+- Add common services in [ServiceDefaults/Extensions.cs](mdc:PetHoroscopeGenerator.ServiceDefaults/Extensions.cs)
+- Include health checks, resilience, and OpenTelemetry
+- Use `AddServiceDefaults()` for consistent configuration
+
+## HTTP Client Configuration
+- Configure resilience with `AddStandardResilienceHandler()`
+- Enable service discovery by default
+- Use proper timeout and retry policies
+
+## Health Checks
+- Implement health checks for all services
+- Use `AddDefaultHealthChecks()` for common checks
+- Monitor service availability and dependencies
+
+## OpenTelemetry
+- Configure logging with `AddOpenTelemetry()`
+- Include formatted messages and scopes
+- Set up metrics and tracing
+
+## Example Configuration:
+```csharp
+builder.Services.ConfigureHttpClientDefaults(http =>
+{
+    http.AddStandardResilienceHandler();
+    http.AddServiceDiscovery();
+});
+```
+
+## Service Registration
+- Register services in the appropriate project
+- Use dependency injection consistently
+- Configure external endpoints with `WithExternalHttpEndpoints()`

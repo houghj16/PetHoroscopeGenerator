@@ -1,0 +1,57 @@
+---
+globs: *.razor
+---
+
+# UI Design Patterns
+
+## Page Layout Structure
+Follow this consistent layout pattern for all pages:
+
+```razor
+<div class="container">
+    <div class="intro-text">
+        <p>*Character introduction*</p>
+        <p>Description and instructions</p>
+    </div>
+    
+    <div class="content">
+        <img class="character-image" src="images/character.png" alt="Character" />
+        <div class="upload-box">
+            <!-- File upload area -->
+        </div>
+        <div class="upload-text">
+            <textarea @oninput="UpdateText"></textarea>
+        </div>
+    </div>
+    
+    <div class="crystal-ball">
+        <button class="btn btn-primary" @onclick="Submit">Get Prediction</button>
+        <p>Prediction message</p>
+        <textarea class="prediction-text" readonly>@prediction</textarea>
+    </div>
+    
+    <!-- Optional carousel -->
+</div>
+```
+
+## Theming Guidelines
+- **Regular Pets**: Default styling with wizard theme
+- **Plants**: Light blue background (`#f0f8ff`) with plant sage
+- **Mythical**: Purple gradient with golden accents and dragon theme
+
+## File Upload Pattern
+- Use `InputFile` component with `OnChange="HandleFileSelected"`
+- Generate preview URLs with base64 encoding
+- Show confirmation text for successful uploads
+- Handle both image and text input
+
+## Button Styling
+- Primary buttons use `btn btn-primary`
+- Include hover effects and transitions
+- Use descriptive text (e.g., "Get Mystical Prediction")
+
+## Carousel Implementation
+- Use Bootstrap carousel with `data-ride="carousel"`
+- Include prev/next controls
+- Use descriptive alt text for images
+- Place at bottom of page content

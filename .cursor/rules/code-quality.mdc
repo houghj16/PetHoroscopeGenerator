@@ -1,0 +1,55 @@
+---
+globs: *.cs,*.razor
+---
+
+# Code Quality Standards
+
+## Naming Conventions
+- Use PascalCase for classes, methods, and properties
+- Use camelCase for local variables and parameters
+- Use descriptive names (e.g., `crystalBallMessage` not `msg`)
+- Prefix private fields with underscore if needed
+
+## Method Organization
+- Keep methods small and focused (single responsibility)
+- Use async/await for I/O operations
+- Handle exceptions appropriately
+- Return meaningful values
+
+## Component Structure
+- Place related code together
+- Use `@code` blocks for component logic
+- Separate UI markup from business logic
+- Use dependency injection for services
+
+## Error Handling
+- Use try-catch blocks for external API calls
+- Return user-friendly error messages
+- Log errors for debugging
+- Don't expose internal errors to users
+
+## Performance
+- Use caching for expensive operations
+- Implement proper disposal patterns
+- Use `using` statements for disposable resources
+- Avoid blocking UI thread
+
+## Example Quality Code:
+```csharp
+private async Task HandleFileSelected(InputFileChangeEventArgs e)
+{
+    try
+    {
+        var file = e.File;
+        using var stream = file.OpenReadStream();
+        using var reader = new StreamReader(stream);
+        var content = await reader.ReadToEndAsync();
+        confirmationText = $"File '{file.Name}' uploaded successfully!";
+    }
+    catch (Exception ex)
+    {
+        confirmationText = "Error uploading file";
+        // Log error
+    }
+}
+```

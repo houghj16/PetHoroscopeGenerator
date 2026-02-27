@@ -5,9 +5,11 @@ using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 using static System.Net.WebRequestMethods;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.AspNetCore.Http;
 
-/* Resolved conflict: use branch's user-secrets config approach (main had hardcoded placeholder keys),
-   keep main's GenerateImageAsync method for AI image generation */
+/* Resolved conflict: keep main's user-secrets credential handling + chat history approach,
+   add branch's PredictionType enum, GetPromptForType, and GenerateImageAsync */
 public class PredictionsApiClient(HttpClient httpClient)
 {
     public async Task<string?> GetPredictionAsync(string petDescription, string previewURL, int maxItems = 10, CancellationToken cancellationToken = default)
@@ -72,4 +74,32 @@ public class PredictionsApiClient(HttpClient httpClient)
         // Placeholder for the actual implementation of image generation using an external API
         return "https://example.com/generated-image.png";
     }
+
+    private string GetPromptForType(PredictionType type, string description)
+    {
+        return type switch
+        {
+            PredictionType.Plant => $"You are a mystical botanist who can read the aura of plants. " +
+                                   $"Generate a whimsical and fun horoscope for a plant based on this description: {description}. " +
+                                   $"Include predictions about growth, blooming potential, and plant happiness. Keep it light and fun!",
+            
+            PredictionType.Pet => $"You are a wise and slightly eccentric pet psychic. " +
+                                  $"Generate a fun and playful horoscope for a pet based on this description: {description}. " +
+                                  $"Include predictions about their mood, adventures, and treats in their future. Keep it magical and amusing!",
+            
+            PredictionType.Mythical => $"You are an ancient dragon sage with knowledge of all mythical creatures. " +
+                                       $"Generate an epic and mystical horoscope for a mythical creature based on this description: {description}. " +
+                                       $"Include predictions about their magical powers, legendary adventures, and destiny. " +
+                                       $"Make it grand, fantastical, and filled with ancient wisdom!",
+            
+            _ => throw new ArgumentException("Invalid prediction type")
+        };
+    }
+}
+
+public enum PredictionType
+{
+    Pet,
+    Plant,
+    Mythical
 }
