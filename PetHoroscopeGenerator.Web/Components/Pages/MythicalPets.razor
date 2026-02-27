@@ -211,6 +211,7 @@
 
     private async Task Submit()
     {
-        crystalBallMessage = await PredictionApi.GetPredictionAsync(Text, previewUrl, PredictionType.Mythical);
+        // Changed: removed PredictionType argument since GetPredictionAsync uses main's signature (int maxItems)
+        crystalBallMessage = await PredictionApi.GetPredictionAsync(Text, previewUrl);
     }
 }

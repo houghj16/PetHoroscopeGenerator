@@ -1,0 +1,29 @@
+@* ImageCarousel component - displays previous predictions with their images *@
+
+@if (Items != null && Items.Any())
+{
+    <div class="carousel-container">
+        <h3>Previous Predictions</h3>
+        @foreach (var item in Items)
+        {
+            <div class="carousel-item">
+                @if (!string.IsNullOrEmpty(item.ImageUrl))
+                {
+                    <img src="@item.ImageUrl" alt="Pet" class="carousel-image" />
+                }
+                <p class="carousel-text">@item.PredictionText</p>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter]
+    public List<CarouselItem> Items { get; set; } = new();
+
+    public class CarouselItem
+    {
+        public string? ImageUrl { get; set; }
+        public string? PredictionText { get; set; }
+    }
+}
