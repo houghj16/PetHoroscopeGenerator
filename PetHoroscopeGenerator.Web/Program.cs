@@ -30,6 +30,11 @@ builder.Services.AddHttpClient<PredictionsApiClient>(client =>
     client.BaseAddress = new("https+http://apiservice");
 });
 
+builder.Services.AddHttpClient<LuckyNumbersApiClient>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["BaseAddress"]);
+});
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
