@@ -20,6 +20,7 @@ builder.Services.AddOutputCache();
 //        client.BaseAddress = new("https+http://weatherapiservice");
 //    });
 
+/* Resolved conflict: keep main's Key Vault config + LuckyNumbersApiClient registration alongside branch's setup */
 var keyVaultEndpoint = new Uri(builder.Configuration["KeyVault:VaultUri"]);
 builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, new DefaultAzureCredential());
 

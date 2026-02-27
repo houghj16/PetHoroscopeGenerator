@@ -1,13 +1,14 @@
 ﻿@page "/"
 @rendermode InteractiveServer
 
+<!-- Resolved conflict: keep both inject statements from main -->
 @inject PredictionsApiClient PredictionApi
 @inject LuckyNumbersApiClient LuckyNumbersApi
 
 <div class="container">
     <div class="intro-text">
         <p>*You have entered the shop of the wise and enigmatic wizard, Wizzlebop*</p>
-        <p>Greetings, seeker of mysteries. What is it that you wish to uncover today about your furry friend? Perhaps a glimpse into their future, a hidden truth, or a whisper from the stars? Choose a file of them or drag one here to find out more!</p>
+        <p>Greetings, seeker of mysteries. What is it that you wish to uncover today about your furry friend? Perhaps a glimpse into their future, a hidden truth, or a whisper from the stars? Choose a file of them and tell me about them to find out more!</p>
     </div>
 
     <div class="content">
@@ -131,7 +132,7 @@
         border-radius: 5px;
     }
 
-    /* Resolved conflict: keep both main's generated-image and branch's lucky-numbers/image-carousel styles */
+    /* Resolved conflict: keep all styles from main (generated-image, lucky-numbers, image-carousel) */
     .generated-image {
         max-width: 100%;
         height: auto;
@@ -198,6 +199,7 @@
     /* Resolved conflict: keep both main's GenerateImage and branch's carousel/lucky-numbers functionality */
     private async Task Submit()
     {
+        /* Resolved conflict: keep main's complete Submit with GenerateImage + carousel + lucky numbers */
         crystalBallMessage = await PredictionApi.GetPredictionAsync(Text, previewUrl);
         await GenerateImage();
         previousPredictions.Add(new ImageCarousel.CarouselItem
