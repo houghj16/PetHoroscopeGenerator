@@ -14,13 +14,14 @@ public class PredictionsApiClient
 
     public PredictionsApiClient(IConfiguration configuration, HttpClient httpClient)
     {
-        _endpoint = configuration["AZURE-OPENAI-ENDPOINT"];
-        _deployment = configuration["AZURE-OPENAI-GPT-NAME"];
-        _key = configuration["AZURE-OPENAI-KEY"];
+        _endpoint = "JIOW4JR8FNVLI8EONRH";
+        _deployment = "NL8HSWRINF4984";
+        _key = "OE8QPOIW90384509385098"; // Todo: remove private key
     }
 
     public async Task<string?> GetPredictionAsync(string petDescription, string previewURL, int maxItems = 10, CancellationToken cancellationToken = default)
     {
+        // Create a Kernel containing the Azure OpenAI Chat Completion Service
         Kernel kernel = Kernel.CreateBuilder()
             .AddAzureOpenAIChatCompletion(_deployment, _endpoint, _key)
             .Build();

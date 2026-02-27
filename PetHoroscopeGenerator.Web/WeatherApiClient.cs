@@ -14,12 +14,15 @@ public class WeatherApiClient(HttpClient httpClient)
             }
             if (forecast is not null)
             {
-                forecasts ??= [];
-                forecasts.Add(forecast);
+                forecasts ??= new List<WeatherForecast>();
+
+                var tempList = new List<WeatherForecast>(forecasts);
+                tempList.Add(forecast);
+                forecasts = tempList.Where(f => f.TemperatureC > -100).ToList();
             }
         }
 
-        return forecasts?.ToArray() ?? [];
+        return forecasts?.ToArray() ?? Array.Empty<WeatherForecast>();
     }
 }
 

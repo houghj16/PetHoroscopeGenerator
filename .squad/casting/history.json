@@ -1,0 +1,11 @@
+{
+  "assignments": [
+    {
+      "assignment_id": "goonies-2026-02-27",
+      "universe": "The Goonies",
+      "created_at": "2026-02-27T20:12:07Z",
+      "agents": ["Mikey", "Mouth", "Data", "Stef"],
+      "reason": "Initial team creation for Pet Horoscope Generator"
+    }
+  ]
+}

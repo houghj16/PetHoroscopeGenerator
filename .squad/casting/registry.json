@@ -1,0 +1,36 @@
+{
+  "agents": [
+    {
+      "persistent_name": "Mikey",
+      "role": "Lead",
+      "universe": "The Goonies",
+      "created_at": "2026-02-27T20:12:07Z",
+      "legacy_named": false,
+      "status": "active"
+    },
+    {
+      "persistent_name": "Mouth",
+      "role": "Frontend Dev",
+      "universe": "The Goonies",
+      "created_at": "2026-02-27T20:12:07Z",
+      "legacy_named": false,
+      "status": "active"
+    },
+    {
+      "persistent_name": "Data",
+      "role": "Backend Dev",
+      "universe": "The Goonies",
+      "created_at": "2026-02-27T20:12:07Z",
+      "legacy_named": false,
+      "status": "active"
+    },
+    {
+      "persistent_name": "Stef",
+      "role": "Tester",
+      "universe": "The Goonies",
+      "created_at": "2026-02-27T20:12:07Z",
+      "legacy_named": false,
+      "status": "active"
+    }
+  ]
+}
