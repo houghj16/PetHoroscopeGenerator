@@ -1,0 +1,317 @@
+@page "/plants"
+@rendermode InteractiveServer
+
+<PageTitle>Mystical Botanicals</PageTitle>
+
+<div class="plants-container">
+    <div class="mystical-header">
+        <h1 class="enchanted-title">🌿 Wizzlebop's Mystical Botanicals 🌿</h1>
+        <p class="intro-text">*The ancient wizard gestures toward a magical greenhouse*</p>
+        <p class="description">Behold, seeker of green mysteries! These enchanted plants hold special powers and bring magical energy to your domain. Each one whispers secrets of ancient wisdom and natural harmony.</p>
+    </div>
+
+    @if (plants == null)
+    {
+        <div class="loading-container">
+            <div class="crystal-orb"></div>
+            <p class="loading-text">✨ Communing with plant spirits... ✨</p>
+        </div>
+    }
+    else
+    {
+        <div class="plants-grid">
+            @foreach (var plant in plants)
+            {
+                <div class="mystical-card @(selectedPlant == plant.Name ? "selected" : "")" 
+                     @onclick="() => SelectPlant(plant.Name)">
+                    <div class="card-glow"></div>
+                    <div class="plant-icon">@plant.Icon</div>
+                    <h3 class="plant-name">@plant.Name</h3>
+                    <p class="plant-description">@plant.Description</p>
+                    <div class="mystical-properties">
+                        <span class="magic-level @GetMagicLevelClass(plant.MagicLevel)">
+                            ⭐ @plant.MagicLevel Magic
+                        </span>
+                    </div>
+                    <div class="plant-powers">
+                        <strong>Mystical Properties:</strong> @plant.MysticalPowers
+                    </div>
+                    <div class="care-wisdom">
+                        <strong>Ancient Wisdom:</strong> @plant.CareWisdom
+                    </div>
+                    @if (selectedPlant == plant.Name)
+                    {
+                        <div class="magical-effects">
+                            <p class="secret-knowledge">🔮 <em>@plant.SecretKnowledge</em></p>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="mystical-footer">
+            <p>💫 Click on any plant to discover its hidden secrets 💫</p>
+        </div>
+    }
+</div>
+
+<style>
+    .plants-container {
+        padding: 20px;
+        background: linear-gradient(135deg, #0a1428 0%, #1a2c54 50%, #2a3d6b 100%);
+        min-height: 100vh;
+        color: #e8f4fd;
+    }
+
+    .mystical-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .enchanted-title {
+        font-size: 2.5rem;
+        background: linear-gradient(45deg, #ffd700, #ffeb3b, #8bc34a, #4caf50);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        margin-bottom: 20px;
+        animation: shimmer 3s ease-in-out infinite;
+    }
+
+    @@keyframes shimmer {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.8; }
+    }
+
+    .intro-text {
+        font-style: italic;
+        color: #b8e6b8;
+        margin: 10px 0;
+        font-size: 1.1rem;
+    }
+
+    .description {
+        max-width: 800px;
+        margin: 0 auto;
+        font-size: 1.1rem;
+        line-height: 1.6;
+        color: #d4e8f7;
+    }
+
+    .loading-container {
+        text-align: center;
+        margin: 100px 0;
+    }
+
+    .crystal-orb {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 30% 30%, #ffffff, #87ceeb, #4169e1, #191970);
+        animation: float 3s ease-in-out infinite, glow 2s ease-in-out infinite alternate;
+    }
+
+    @@keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
+
+    @@keyframes glow {
+        0% { box-shadow: 0 0 20px rgba(135, 206, 235, 0.5); }
+        100% { box-shadow: 0 0 40px rgba(135, 206, 235, 0.8), 0 0 60px rgba(65, 105, 225, 0.3); }
+    }
+
+    .loading-text {
+        font-size: 1.3rem;
+        color: #ffd700;
+        animation: sparkle 1.5s ease-in-out infinite;
+    }
+
+    @@keyframes sparkle {
+        0%, 100% { opacity: 0.7; }
+        50% { opacity: 1; }
+    }
+
+    .plants-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 30px;
+        margin: 40px 0;
+    }
+
+    .mystical-card {
+        background: rgba(13, 27, 42, 0.8);
+        border: 2px solid transparent;
+        border-radius: 15px;
+        padding: 25px;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        backdrop-filter: blur(10px);
+    }
+
+    .mystical-card:hover, .mystical-card.selected {
+        border-color: #ffd700;
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(255, 215, 0, 0.2);
+    }
+
+    .card-glow {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .mystical-card:hover .card-glow, .mystical-card.selected .card-glow {
+        opacity: 1;
+    }
+
+    .plant-icon {
+        font-size: 3rem;
+        text-align: center;
+        margin-bottom: 15px;
+        filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.3));
+    }
+
+    .plant-name {
+        color: #ffd700;
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+
+    .plant-description {
+        color: #b8e6b8;
+        margin-bottom: 15px;
+        font-style: italic;
+        line-height: 1.5;
+    }
+
+    .mystical-properties {
+        text-align: center;
+        margin: 15px 0;
+    }
+
+    .magic-level {
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-weight: bold;
+        font-size: 0.9rem;
+    }
+
+    .magic-level.novice {
+        background: linear-gradient(45deg, #4caf50, #8bc34a);
+        color: #ffffff;
+    }
+
+    .magic-level.apprentice {
+        background: linear-gradient(45deg, #ff9800, #ffc107);
+        color: #ffffff;
+    }
+
+    .magic-level.master {
+        background: linear-gradient(45deg, #9c27b0, #e91e63);
+        color: #ffffff;
+    }
+
+    .plant-powers, .care-wisdom {
+        margin: 15px 0;
+        color: #e0e0e0;
+        line-height: 1.4;
+    }
+
+    .plant-powers strong, .care-wisdom strong {
+        color: #87ceeb;
+    }
+
+    .magical-effects {
+        margin-top: 20px;
+        padding: 15px;
+        background: rgba(255, 215, 0, 0.1);
+        border-radius: 10px;
+        border-left: 4px solid #ffd700;
+        animation: appear 0.5s ease-in-out;
+    }
+
+    @@keyframes appear {
+        0% { opacity: 0; transform: translateY(10px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .secret-knowledge {
+        color: #ffd700;
+        font-size: 1.1rem;
+        margin: 0;
+    }
+
+    .mystical-footer {
+        text-align: center;
+        margin-top: 40px;
+        color: #87ceeb;
+        font-size: 1.1rem;
+    }
+
+    @@media (max-width: 768px) {
+        .plants-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        
+        .enchanted-title {
+            font-size: 2rem;
+        }
+        
+        .mystical-card {
+            padding: 20px;
+        }
+    }
+</style>
+
+@code {
+    private PlantInfo[]? plants;
+    private string? selectedPlant;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Simulate mystical plant spirit communion
+        await Task.Delay(1500);
+        
+        plants = [
+            new PlantInfo("🐍 Serpent's Garden", "A mystical guardian that protects against negative energies while purifying the air with ancient magic", "Novice", "🛡️ Protection & Air Purification", "Water only when the moon is waning, for this plant draws power from lunar cycles", "This plant can sense supernatural presences and will lean away from areas of negative energy"),
+            new PlantInfo("💚 Heartleaf Enchantment", "A cascading vine of love that brings harmony to relationships and grows with the strength of emotional bonds", "Novice", "💕 Love & Harmony Enhancement", "Whisper kind words to it daily - it grows faster with positive affirmations", "Legend says couples who tend this plant together will have lasting love"),
+            new PlantInfo("🎵 Melody Leaf Oracle", "A grand divination plant whose leaves rustle with whispers of future events and hidden knowledge", "Master", "🔮 Future Sight & Wisdom", "Play classical music weekly - its leaves dance to predict coming changes", "The patterns in its leaves can reveal glimpses of events yet to come"),
+            new PlantInfo("🌙 Moonbeam Splitter", "An otherworldly plant whose fenestrated leaves capture moonlight and transform it into healing energy", "Apprentice", "🌙 Healing & Transformation", "Water with moonlight-charged water during full moons for maximum magical potency", "Its split leaves align with ley lines and can amplify other plants' magical properties"),
+            new PlantInfo("🕊️ Serenity Blossom", "A peaceful spirit plant that absorbs stress and sorrow, replacing it with tranquil white light energy", "Novice", "☮️ Peace & Emotional Healing", "It will droop to warn you of upcoming stress - heed its gentle warnings", "Can absorb nightmares when placed near a sleeping area"),
+            new PlantInfo("🌳 Ancient Wisdom Tree", "A noble rubber plant that holds centuries of knowledge and brings prosperity to those who care for it", "Apprentice", "💰 Wisdom & Prosperity", "Polish its leaves with blessed oils to unlock its ancient memories and blessings", "Each new leaf represents a wish that may come true with proper devotion")
+        ];
+    }
+
+    private void SelectPlant(string plantName)
+    {
+        selectedPlant = selectedPlant == plantName ? null : plantName;
+    }
+
+    private string GetMagicLevelClass(string magicLevel)
+    {
+        return magicLevel.ToLower() switch
+        {
+            "novice" => "novice",
+            "apprentice" => "apprentice",
+            "master" => "master",
+            _ => "novice"
+        };
+    }
+
+    public record PlantInfo(string Name, string Description, string MagicLevel, string MysticalPowers, string CareWisdom, string SecretKnowledge)
+    {
+        public string Icon => Name.Split(' ')[0]; // Extract the emoji
+    }
+}
