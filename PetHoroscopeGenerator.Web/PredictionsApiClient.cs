@@ -18,27 +18,19 @@ public class PredictionsApiClient
         _deployment = configuration["AZURE-OPENAI-GPT-NAME"];
         _key = configuration["AZURE-OPENAI-KEY"];
     }
+
     public async Task<string?> GetPredictionAsync(string petDescription, string previewURL, int maxItems = 10, CancellationToken cancellationToken = default)
     {
-
-        //var config = new ConfigurationBuilder().AddUserSecrets<Program>().Build();
-        //string endpoint = config["AZURE_OPENAI_ENDPOINT"];
-        //string deployment = config["AZURE_OPENAI_GPT_NAME"];
-        //string key = config["AZURE_OPENAI_KEY"];
-
-        // Create a Kernel containing the Azure OpenAI Chat Completion Service
         Kernel kernel = Kernel.CreateBuilder()
             .AddAzureOpenAIChatCompletion(_deployment, _endpoint, _key)
             .Build();
 
-        // Create and print out the prompt
         string prompt = $"""
             Please generate a horoscope for a pet based on the following information and image:
             {petDescription}
             """;
         Console.WriteLine($"user >>> {prompt}");
 
-        // Create a ChatHistory object and add the system message
         var chat = kernel.GetRequiredService<IChatCompletionService>();
         var history = new ChatHistory();
         history.AddSystemMessage("""
@@ -59,7 +51,6 @@ public class PredictionsApiClient
             Add emojis to make the tone playful.
             """);
 
-        // Add the image and userMessage message to the ChatHistory
         var imageContent = new ImageContent(previewURL);
 
         var collectionItems = new ChatMessageContentItemCollection
@@ -71,8 +62,16 @@ public class PredictionsApiClient
         history.AddUserMessage(collectionItems);
 
         var result = await chat.GetChatMessageContentsAsync(history);
-        return result[^1].Content;
+        var prediction = result[^1].Content;
 
-        //return await kernel.InvokePromptAsync<string>(prompt, new(new OpenAIPromptExecutionSettings() { MaxTokens = 400 }), cancellationToken: cancellationToken);
+        var imageUrl = await GenerateImageAsync(petDescription, cancellationToken);
+        return $"{prediction}\n\nGenerated Image: {imageUrl}";
+    }
+
+    public async Task<string> GenerateImageAsync(string petDescription, CancellationToken cancellationToken = default)
+    {
+        // Placeholder for the actual implementation of image generation using an external API
+        // This should call the external API and return the URL of the generated image
+        return "https://example.com/generated-image.png";
     }
 }
