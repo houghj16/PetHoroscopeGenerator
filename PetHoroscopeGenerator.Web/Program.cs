@@ -19,11 +19,8 @@ builder.Services.AddOutputCache();
 //        client.BaseAddress = new("https+http://weatherapiservice");
 //    });
 
-builder.Services.AddHttpClient<PredictionsApiClient>(client =>
-{
-    // Changed: predictions now use the GitHub Copilot SDK locally; keep the typed client registration for existing injection.
-    client.BaseAddress = new("https+http://apiservice");
-});
+// Changed: predictions now use the GitHub Copilot SDK directly instead of an HTTP/Azure OpenAI client.
+builder.Services.AddScoped<PredictionsApiClient>();
 
 builder.Services.AddHttpClient<LuckyNumbersApiClient>(client =>
 {

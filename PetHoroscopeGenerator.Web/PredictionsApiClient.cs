@@ -3,7 +3,7 @@ namespace PetHoroscopeGenerator.Web;
 using GitHub.Copilot;
 using System.Text;
 
-public class PredictionsApiClient(HttpClient httpClient, IConfiguration configuration)
+public class PredictionsApiClient(IConfiguration configuration)
 {
     public async Task<string?> GetPredictionAsync(string? petDescription, string? previewUrl, int maxItems = 10, CancellationToken cancellationToken = default)
     {
