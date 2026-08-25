@@ -7,8 +7,13 @@ public class PredictionsApiClient(IConfiguration configuration)
 {
     public async Task<string?> GetPredictionAsync(string? petDescription, string? previewUrl, int maxItems = 10, CancellationToken cancellationToken = default)
     {
-        var model = configuration["GitHubCopilot:Model"] ?? "gpt-5";
-        var gitHubToken = configuration["GitHubCopilot:Token"];
+        var model = configuration["GitHubCopilot:Model"];
+        var timeoutSeconds = int.TryParse(configuration["GitHubCopilot:TimeoutSeconds"], out var configuredTimeoutSeconds)
+            ? configuredTimeoutSeconds
+            : 60;
+        // Changed: read optional Copilot credentials only from environment variables so tokens are not encouraged in appsettings.
+        var gitHubToken = Environment.GetEnvironmentVariable("GITHUB_COPILOT_TOKEN")
+            ?? Environment.GetEnvironmentVariable("GITHUB_TOKEN");
 
         var prompt = $"""
             Please generate a horoscope for a pet based on the following information:
@@ -16,13 +21,13 @@ public class PredictionsApiClient(IConfiguration configuration)
             """;
 
         var assistantResponse = new StringBuilder();
-        var error = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+        string? errorMessage = null;
         var done = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
 
         var options = new CopilotClientOptions
         {
             GitHubToken = string.IsNullOrWhiteSpace(gitHubToken) ? null : gitHubToken,
-            UseLoggedInUser = string.IsNullOrWhiteSpace(gitHubToken) ? true : false
+            UseLoggedInUser = string.IsNullOrWhiteSpace(gitHubToken)
         };
 
         await using var client = new CopilotClient(options);
@@ -30,7 +35,7 @@ public class PredictionsApiClient(IConfiguration configuration)
 
         await using var session = await client.CreateSessionAsync(new SessionConfig
         {
-            Model = model,
+            Model = string.IsNullOrWhiteSpace(model) ? null : model,
             InfiniteSessions = new InfiniteSessionConfig { Enabled = false },
             SkipCustomInstructions = true,
             EnableConfigDiscovery = false,
@@ -40,7 +45,7 @@ public class PredictionsApiClient(IConfiguration configuration)
                 Mode = SystemMessageMode.Replace,
                 // Changed: preserve the existing horoscope format while replacing Azure OpenAI/Semantic Kernel with GitHub Copilot SDK.
                 Content = """
-            Do not use any markdown formatting, octothorpes, or asteriks. 
+            Do not use any markdown formatting, octothorpes, or asterisks. 
             Instead add a newline after headers. 
             Limit the output to 800 characters.
             Use the provided image, if one is attached, to say something specific about the pet.
@@ -60,16 +65,16 @@ public class PredictionsApiClient(IConfiguration configuration)
             }
         });
 
+        // Changed: subscribe before SendAsync so horoscope response events are captured for this prompt.
         using var subscription = session.On<SessionEvent>(evt =>
         {
             switch (evt)
             {
                 case AssistantMessageEvent message when !string.IsNullOrWhiteSpace(message.Data.Content):
-                    assistantResponse.Clear();
                     assistantResponse.Append(message.Data.Content);
                     break;
                 case SessionErrorEvent sessionError:
-                    error.TrySetResult(sessionError.Data.Message ?? "GitHub Copilot SDK returned an error.");
+                    errorMessage = sessionError.Data.Message ?? "GitHub Copilot SDK returned an error.";
                     done.TrySetResult();
                     break;
                 case SessionIdleEvent:
@@ -77,23 +82,20 @@ public class PredictionsApiClient(IConfiguration configuration)
                     break;
             }
         });
-
-        using var cancellation = cancellationToken.Register(() =>
-        {
-            error.TrySetResult("The GitHub Copilot SDK request was canceled.");
-            done.TrySetResult();
-        });
+        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        using var cancellation = timeout.Token.Register(() => done.TrySetCanceled(timeout.Token));
+        timeout.CancelAfter(TimeSpan.FromSeconds(timeoutSeconds));
 
         await session.SendAsync(new MessageOptions
         {
             Prompt = prompt,
             Attachments = CreateAttachments(previewUrl)
         });
-        await done.Task.WaitAsync(cancellationToken);
+        await done.Task;
 
-        if (error.Task.IsCompletedSuccessfully)
+        if (!string.IsNullOrWhiteSpace(errorMessage))
         {
-            return error.Task.Result;
+            throw new InvalidOperationException(errorMessage);
         }
 
         return assistantResponse.Length > 0

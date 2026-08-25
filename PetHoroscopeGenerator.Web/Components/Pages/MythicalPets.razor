@@ -2,6 +2,7 @@
 @rendermode InteractiveServer
 
 @inject PredictionsApiClient PredictionApi
+@inject ILogger<MythicalPets> Logger
 
 <PageTitle>Mythical Pet Horoscopes</PageTitle>
 
@@ -212,6 +213,16 @@
     private async Task Submit()
     {
         // Changed: removed PredictionType argument since GetPredictionAsync uses main's signature (int maxItems)
-        crystalBallMessage = await PredictionApi.GetPredictionAsync(Text, previewUrl);
+        try
+        {
+            crystalBallMessage = await PredictionApi.GetPredictionAsync(Text, previewUrl);
+        }
+        catch (Exception ex)
+        {
+            // Changed: surface Copilot SDK failures as friendly UI text instead of treating them as successful predictions.
+            Logger.LogError(ex, "Failed to generate mythical pet horoscope with the GitHub Copilot SDK.");
+            crystalBallMessage = "The ancient spirits are quiet right now. Please try again.";
+            return;
+        }
     }
 }

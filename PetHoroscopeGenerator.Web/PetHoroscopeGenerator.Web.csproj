@@ -7,8 +7,6 @@
     <UserSecretsId>cc40e722-5ae2-4ebe-be55-9b3f5c186319</UserSecretsId>
   </PropertyGroup>
 
-  <!-- Resolved conflict: keep all package references from both sides -->
-
   <ItemGroup>
     <ProjectReference Include="..\PetHoroscopeGenerator.ServiceDefaults\PetHoroscopeGenerator.ServiceDefaults.csproj" />
   </ItemGroup>

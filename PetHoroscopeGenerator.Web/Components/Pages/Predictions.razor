@@ -4,6 +4,7 @@
 <!-- Resolved conflict: keep both inject statements from main -->
 @inject PredictionsApiClient PredictionApi
 @inject LuckyNumbersApiClient LuckyNumbersApi
+@inject ILogger<Predictions> Logger
 
 <div class="container">
     <div class="intro-text">
@@ -200,7 +201,18 @@
     private async Task Submit()
     {
         /* Resolved conflict: keep main's complete Submit with GenerateImage + carousel + lucky numbers */
-        crystalBallMessage = await PredictionApi.GetPredictionAsync(Text, previewUrl);
+        try
+        {
+            crystalBallMessage = await PredictionApi.GetPredictionAsync(Text, previewUrl);
+        }
+        catch (Exception ex)
+        {
+            // Changed: surface Copilot SDK failures as friendly UI text instead of treating them as successful horoscopes.
+            Logger.LogError(ex, "Failed to generate pet horoscope with the GitHub Copilot SDK.");
+            crystalBallMessage = "The stars are clouded right now. Please try again.";
+            return;
+        }
+
         await GenerateImage();
         previousPredictions.Add(new ImageCarousel.CarouselItem
         {
