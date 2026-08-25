@@ -1,4 +1,3 @@
-using Azure.Identity;
 using PetHoroscopeGenerator.Web;
 using PetHoroscopeGenerator.Web.Components;
 
@@ -20,14 +19,9 @@ builder.Services.AddOutputCache();
 //        client.BaseAddress = new("https+http://weatherapiservice");
 //    });
 
-/* Resolved conflict: keep main's Key Vault config + LuckyNumbersApiClient registration alongside branch's setup */
-var keyVaultEndpoint = new Uri(builder.Configuration["KeyVault:VaultUri"]);
-builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, new DefaultAzureCredential());
-
 builder.Services.AddHttpClient<PredictionsApiClient>(client =>
 {
-    // This URL uses "https+http://" to indicate HTTPS is preferred over HTTP.
-    // Learn more about service discovery scheme resolution at https://aka.ms/dotnet/sdschemes.
+    // Changed: predictions now use the GitHub Copilot SDK locally; keep the typed client registration for existing injection.
     client.BaseAddress = new("https+http://apiservice");
 });
 

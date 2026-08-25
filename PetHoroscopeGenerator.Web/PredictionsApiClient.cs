@@ -1,45 +1,49 @@
 namespace PetHoroscopeGenerator.Web;
 
-using Microsoft.Extensions.Configuration;
-using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.SemanticKernel.Connectors.OpenAI;
-using static System.Net.WebRequestMethods;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.AspNetCore.Http;
+using GitHub.Copilot;
+using System.Text;
 
-/* Resolved conflict: keep main's user-secrets credential handling + chat history approach,
-   add branch's PredictionType enum, GetPromptForType, and GenerateImageAsync */
-public class PredictionsApiClient(HttpClient httpClient)
+public class PredictionsApiClient(HttpClient httpClient, IConfiguration configuration)
 {
-    public async Task<string?> GetPredictionAsync(string petDescription, string previewURL, int maxItems = 10, CancellationToken cancellationToken = default)
+    public async Task<string?> GetPredictionAsync(string? petDescription, string? previewUrl, int maxItems = 10, CancellationToken cancellationToken = default)
     {
+        var model = configuration["GitHubCopilot:Model"] ?? "gpt-5";
+        var gitHubToken = configuration["GitHubCopilot:Token"];
 
-        var config = new ConfigurationBuilder().AddUserSecrets<Program>().Build();
-        string endpoint = config["AZURE_OPENAI_ENDPOINT"];
-        string deployment = config["AZURE_OPENAI_GPT_NAME"];
-        string key = config["AZURE_OPENAI_KEY"];
-
-        // Create a Kernel containing the Azure OpenAI Chat Completion Service
-        Kernel kernel = Kernel.CreateBuilder()
-            .AddAzureOpenAIChatCompletion(deployment, endpoint, key)
-            .Build();
-
-        // Create and print out the prompt
-        string prompt = $"""
-            Please generate a horoscope for a pet based on the following information and image:
+        var prompt = $"""
+            Please generate a horoscope for a pet based on the following information:
             {petDescription}
             """;
-        Console.WriteLine($"user >>> {prompt}");
 
-        // Create a ChatHistory object and add the system message
-        var chat = kernel.GetRequiredService<IChatCompletionService>();
-        var history = new ChatHistory();
-        history.AddSystemMessage("""
+        var assistantResponse = new StringBuilder();
+        var error = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var done = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        var options = new CopilotClientOptions
+        {
+            GitHubToken = string.IsNullOrWhiteSpace(gitHubToken) ? null : gitHubToken,
+            UseLoggedInUser = string.IsNullOrWhiteSpace(gitHubToken) ? true : false
+        };
+
+        await using var client = new CopilotClient(options);
+        await client.StartAsync();
+
+        await using var session = await client.CreateSessionAsync(new SessionConfig
+        {
+            Model = model,
+            InfiniteSessions = new InfiniteSessionConfig { Enabled = false },
+            SkipCustomInstructions = true,
+            EnableConfigDiscovery = false,
+            AvailableTools = [],
+            SystemMessage = new SystemMessageConfig
+            {
+                Mode = SystemMessageMode.Replace,
+                // Changed: preserve the existing horoscope format while replacing Azure OpenAI/Semantic Kernel with GitHub Copilot SDK.
+                Content = """
             Do not use any markdown formatting, octothorpes, or asteriks. 
             Instead add a newline after headers. 
             Limit the output to 800 characters.
-            Use the provided image to say something specific about the dog.
+            Use the provided image, if one is attached, to say something specific about the pet.
             Include a horoscope for the day and one line sections for a lucky treat, a favorite toy, a fun activity, and what to watch out for.
             Format responses like this:
             `[pet name] Pet Horoscope *emojis*
@@ -52,21 +56,49 @@ public class PredictionsApiClient(HttpClient httpClient)
             Watch Out For: [danger] *emojis*`
             Add emojis to make the tone playful.
             Add a silly sign off from the cat wizard.
-            """);
+            """
+            }
+        });
 
-        // Add the image and userMessage message to the ChatHistory
-        var imageContent = new ImageContent(previewURL);
-
-        var collectionItems = new ChatMessageContentItemCollection
+        using var subscription = session.On<SessionEvent>(evt =>
         {
-            new TextContent(prompt),
-            imageContent
-        };
+            switch (evt)
+            {
+                case AssistantMessageEvent message when !string.IsNullOrWhiteSpace(message.Data.Content):
+                    assistantResponse.Clear();
+                    assistantResponse.Append(message.Data.Content);
+                    break;
+                case SessionErrorEvent sessionError:
+                    error.TrySetResult(sessionError.Data.Message ?? "GitHub Copilot SDK returned an error.");
+                    done.TrySetResult();
+                    break;
+                case SessionIdleEvent:
+                    done.TrySetResult();
+                    break;
+            }
+        });
 
-        history.AddUserMessage(collectionItems);
+        using var cancellation = cancellationToken.Register(() =>
+        {
+            error.TrySetResult("The GitHub Copilot SDK request was canceled.");
+            done.TrySetResult();
+        });
 
-        var result = await chat.GetChatMessageContentsAsync(history);
-        return result[^1].Content;
+        await session.SendAsync(new MessageOptions
+        {
+            Prompt = prompt,
+            Attachments = CreateAttachments(previewUrl)
+        });
+        await done.Task.WaitAsync(cancellationToken);
+
+        if (error.Task.IsCompletedSuccessfully)
+        {
+            return error.Task.Result;
+        }
+
+        return assistantResponse.Length > 0
+            ? assistantResponse.ToString()
+            : "The stars are quiet right now. Please try again.";
     }
 
     public async Task<string> GenerateImageAsync(string petDescription, CancellationToken cancellationToken = default)
@@ -93,6 +125,42 @@ public class PredictionsApiClient(HttpClient httpClient)
                                        $"Make it grand, fantastical, and filled with ancient wisdom!",
             
             _ => throw new ArgumentException("Invalid prediction type")
+        };
+    }
+
+    private static IList<Attachment>? CreateAttachments(string? previewUrl)
+    {
+        var attachment = CreateImageAttachment(previewUrl);
+        return attachment is null ? null : [attachment];
+    }
+
+    private static AttachmentBlob? CreateImageAttachment(string? previewUrl)
+    {
+        if (string.IsNullOrWhiteSpace(previewUrl) || !previewUrl.StartsWith("data:", StringComparison.OrdinalIgnoreCase))
+        {
+            return null;
+        }
+
+        var commaIndex = previewUrl.IndexOf(',');
+        if (commaIndex < 0)
+        {
+            return null;
+        }
+
+        var metadata = previewUrl[5..commaIndex];
+        if (!metadata.EndsWith(";base64", StringComparison.OrdinalIgnoreCase))
+        {
+            return null;
+        }
+
+        var mimeType = metadata[..^7];
+        var base64Data = previewUrl[(commaIndex + 1)..];
+
+        return new AttachmentBlob
+        {
+            Data = base64Data,
+            MimeType = string.IsNullOrWhiteSpace(mimeType) ? "image/png" : mimeType,
+            DisplayName = "pet-image"
         };
     }
 }
