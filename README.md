@@ -1,7 +1,8 @@
 # Pet Horoscope Generator
 
 Description:
-Build a webpage where users can upload pictures of their pets and receive horoscopes about their pets’ thoughts and future. The webpage will use a combination of  text generation and analysis of the uploaded photos to provide humorous and absurd predictions.
+Build a webpage where users can upload pictures of their pets and receive horoscopes about their petsï¿½ thoughts and future. The webpage will use a combination of  text generation and analysis of the uploaded photos to provide humorous and absurd predictions.
+Predictions are intended for entertainment, not serious astrological guidance.
 
 Key Features:
 - Photo Upload: Allow users to upload pictures of their pets.
