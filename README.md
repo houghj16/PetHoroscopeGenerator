@@ -6,6 +6,7 @@ Predictions are intended for entertainment, not serious astrological guidance.
 
 Key Features:
 - Photo Upload: Allow users to upload pictures of their pets.
+- Test Change
 - Horoscopes Prediction Engine: Generate random and funny predictions based on the uploaded pet photo.
 
 Possible Features:
